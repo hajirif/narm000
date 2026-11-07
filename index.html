@@ -1,0 +1,412 @@
+
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dolunaydan Alınmış Gözəllik</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@600;700&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+}
+
+body {
+    background: #030509;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1800px;
+    font-family: 'Lora', serif;
+    overflow: hidden;
+}
+
+/* KİTABIN ÖLÇÜLƏRİ */
+
+.book-container {
+    position: relative;
+    width: min(86vw, 340px);
+    height: min(78vh, 530px);
+    transform-style: preserve-3d;
+    perspective: 1800px;
+    filter: drop-shadow(0 20px 35px rgba(0,0,0,0.65));
+}
+
+/* SƏHİFƏLƏR */
+
+.page {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform-origin: left center;
+    transform-style: preserve-3d;
+    transition: transform 1.15s cubic-bezier(.645,.045,.355,1);
+    cursor: pointer;
+    border-radius: 5px 15px 15px 5px;
+}
+
+.page.flipped {
+    transform: rotateY(-180deg);
+}
+
+.page-face {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 5px 15px 15px 5px;
+}
+
+/* SƏHİFƏNİN ARXA TƏRƏFİ */
+
+.page-back {
+    transform: rotateY(180deg);
+    background: #fcf8f2;
+    border-right: 4px solid #e2d7c5;
+}
+
+/* ÖN QABIQ - YAZILI ŞƏKİL */
+
+.cover-front {
+    background-image: url('images/cover-front.jpg');
+    background-size: 100% 100%;
+    background-position: center;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* SON QABIQ - YAZISIZ ŞƏKİL */
+
+.cover-back {
+    background-image: url('images/cover-back.jpg');
+    background-size: 100% 100%;
+    background-position: center;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* AÇMAQ ÜÇÜN YAZI */
+
+.hint {
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-size: 0.65rem;
+    color: white;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: rgba(0,0,0,0.6);
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+/* DAXİLİ SƏHİFƏLƏR */
+
+.inner-page {
+    background: #fcf8f2;
+    padding: 30px 22px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: inset 10px 0 20px rgba(0,0,0,0.04);
+    border-right: 4px solid #e2d7c5;
+}
+
+.inner-page h2 {
+    font-family: 'Cormorant Garamond', serif;
+    text-align: center;
+    font-size: 1.5rem;
+    color: #4a3525;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #e8decb;
+    padding-bottom: 8px;
+    flex-shrink: 0;
+}
+
+.message {
+    font-size: 0.78rem;
+    line-height: 1.65;
+    font-style: italic;
+    color: #2c221e;
+    text-align: justify;
+    overflow-y: auto;
+    padding-right: 5px;
+    user-select: text;
+}
+
+.message::-webkit-scrollbar {
+    width: 3px;
+}
+
+.message::-webkit-scrollbar-thumb {
+    background: #c6a98b;
+    border-radius: 10px;
+}
+
+/* COLDPLAY MUSİQİ SƏHİFƏSİ */
+
+.music-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fcf8f2;
+    padding: 20px;
+}
+
+.music-card {
+    width: 100%;
+    background: #fff;
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    border: 1px solid #e2d7c5;
+    text-align: center;
+}
+
+.album-art {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.album-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.song-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    color: #2c221e;
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+
+.artist-name {
+    font-size: 0.8rem;
+    color: #7c4a27;
+    letter-spacing: 1px;
+    font-style: italic;
+}
+
+.photo-credit {
+    margin-top: 9px;
+    font-size: 0.55rem;
+    color: #999;
+}
+
+/* İMZA */
+
+.signature {
+    margin-top: auto;
+    text-align: right;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #7c4a27;
+    padding-top: 10px;
+    flex-shrink: 0;
+}
+
+/* TELEFON EKRANI */
+
+@media (max-width: 400px) {
+    .inner-page {
+        padding: 24px 17px;
+    }
+
+    .message {
+        font-size: 0.72rem;
+        line-height: 1.6;
+    }
+
+    .inner-page h2 {
+        font-size: 1.35rem;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="book-container" id="container">
+
+    <!-- SƏHİFƏ 1: ÖN QABIQ -->
+
+    <div class="page" id="p1">
+        <div class="page-face cover-front">
+            <div class="hint">Açmaq üçün toxun ✨</div>
+        </div>
+        <div class="page-face page-back"></div>
+    </div>
+
+
+    <!-- SƏHİFƏ 2: COLDPLAY -->
+
+    <div class="page" id="p2">
+        <div class="page-face music-page">
+
+            <div class="music-card">
+
+                <div class="album-art">
+                    <img
+                        src="https://commons.wikimedia.org/wiki/Special:FilePath/Coldplay-concert2005.jpg"
+                        alt="Coldplay qrupu"
+                    >
+                </div>
+
+                <div class="song-title">Viva La Vida</div>
+                <div class="artist-name">Coldplay</div>
+
+                <div class="photo-credit">
+                    Photo: Wikimedia Commons
+                </div>
+
+            </div>
+
+        </div>
+        <div class="page-face page-back"></div>
+    </div>
+
+
+    <!-- SƏHİFƏ 3: DÜŞÜNCƏLƏR -->
+
+    <div class="page" id="p3">
+        <div class="page-face inner-page">
+
+            <h2>Düşüncələr...</h2>
+
+            <div class="message">
+
+                Yay ayları bir müddət Ay mənim pəncərəmdə görünürdü və həmin an düşünürdüm öz-özümə: heç Ay sadə olsaydı, sadə parlayan bir cisim kimi görünsəydi, bu qədər qəlbimizə toxunardımı? Cavab verim: yox. Onu bizə sevdirən, cazibədar göstərən onun, loru dildə desək, görünən ləkələridir.
+
+                <br><br>
+
+                Həmçinin bir gün bütün problemlərim üst-üstə gələn vaxt xanbağımdakı skamyamda oturmuşdum. Mahnının səsini artırdım, başımı qaldırdım göyə baxdım, quşları gördüm, gəlib o başımın üstündəki ağaca qondular; onlar uçdu, başqaları gəlib qondu, fərqli-fərqli quşlar, böcəklər. Düşündüyümdə isə ən gözəl ağaclar budaqları enişli-çıxışlı olanlar idi; qüsursuz, hər şeyi düz olan ağac mənə çəkici gəlmədi. Və bir şeyi fərq elədim, onu sənlə bölüşmək istəyirəm çox uzatmadan: budaqları enişli-çıxışlı, qüsurlu görünən ağaclar bizə uzaqdan çox çəkici və qüsurlu görünür, dərinliyinə gedəndə o özlüyündə qüsurludur — biz baxanda yox amma.
+
+            </div>
+
+        </div>
+        <div class="page-face page-back"></div>
+    </div>
+
+
+    <!-- SƏHİFƏ 4: DAVAMI VƏ TƏBRİK -->
+
+    <div class="page" id="p4">
+        <div class="page-face inner-page">
+
+            <h2>Hər şeyə rəğmən...</h2>
+
+            <div class="message">
+
+                Həmçinin illərlə üstünə qonan böcəklərə, üstündə yuva quran quşlara, yuvasını dağıdıb gedən quşlara, gəlib anlıq keçən quşlara, böcəklərə aldırmadan böyüməyə və gözəl görünməyə davam edirlər. Ay-a gəldikdə isə, o, onun üçün qüsurlu olan ləkələr — elmdə buna "maria" deyirlər, amma bizə görünən ləkədir. Hər nəysə, əslində qüsurlu olduğunu düşünüb ona elə sevgiylə baxılmamalıdır, eləmi? Amma hər kəs aşiqdir Ay-ın o parlamasına, özü də dolunay dediyimiz o anda daha çox parlayıb gözümüzə sanki yeridir ki, o qüsurlarıyla necə də parlaqdır, necə də möhtəşəmdir.
+
+                <br><br>
+
+                Eynən sənin kimi, bu yaşına qədər enişli-çıxışlı olan budaqların; böyüməyə, gəlib-gedən quşlara, böcəklərə aldırış etmədən böyüsün. Sənin gecədən alınmış tənin, saçların və o dolunay kimi parlaq gözlərin bütün ləkə kimi gördüyün hər şeyə rəğmən parlamağa davam etsin, hamının gözünə yerisin. Hər zaman gecən aydınlasın və sabahların xoş xəbərlə açısın. Hər kəsin gərgin olub, qaşlarını çatıb bir-birinin paxıllığını çəkdiyi üçün bir-birinə baxmamaq üçün başını yerdən qaldırmadığı bu dönəmdə, ruhunla gülümsəyib səmaya baxmağı unutma. Sənin qəlbinə, ruhuna hüzur, xoşbəxtlik arzulayıram. Ay-ı Günəş aydınlata bilər, amma sənin parlamaq üçün heç kimə və heç nəyə ehtiyacın yoxdur. Hər şeyə rəğmən səmaya baxıb gülümsə, hər zaman parlamağa davam et, unutma: səni qüsursuz edən qüsurlara, enişlərə və çıxışlara rəğmən parlamağındır.
+
+            </div>
+
+            <div class="signature">Sevgilərlə 🌹</div>
+
+        </div>
+        <div class="page-face page-back"></div>
+    </div>
+
+
+    <!-- SƏHİFƏ 5: ARXA QABIQ -->
+
+    <div class="page" id="p5">
+        <div class="page-face cover-back"></div>
+        <div class="page-face page-back"></div>
+    </div>
+
+</div>
+
+
+<script>
+
+/* KİTABIN SƏHİFƏLƏRİ */
+
+const pages = [
+    document.getElementById('p1'),
+    document.getElementById('p2'),
+    document.getElementById('p3'),
+    document.getElementById('p4'),
+    document.getElementById('p5')
+];
+
+let currentPage = 0;
+
+/* İLK SIRALAMA */
+
+function resetBook() {
+
+    currentPage = 0;
+
+    pages.forEach((page, index) => {
+        page.classList.remove('flipped');
+
+        // Səhifələrin düzgün üst-üstə düzülməsi
+        page.style.zIndex = pages.length - index;
+    });
+}
+
+/* SƏHİFƏNİ ÇEVİRMƏ */
+
+function nextStep() {
+
+    // Son qabıq açılıbsa, kitabı yenidən bağla
+    if (currentPage >= pages.length) {
+
+        resetBook();
+        return;
+    }
+
+    const page = pages[currentPage];
+
+    // Səhifəni çevir
+    page.classList.add('flipped');
+
+    // Çevrilmiş səhifəni digər səhifələrin arxasına keçir
+    page.style.zIndex = currentPage;
+
+    currentPage++;
+
+}
+
+/* HƏR SƏHİFƏYƏ TOXUNMAQ */
+
+pages.forEach((page) => {
+
+    page.addEventListener('click', nextStep);
+
+});
+
+/* BAŞLANĞIC */
+
+resetBook();
+
+</script>
+
+</body>
+</html>
